@@ -1,23 +1,59 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from "react";
+import { Routes, Route } from "react-router-dom";
+import Home from "./components/Home/Home";
+import Login from "./components/Auth/Login";
+import Register from "./components/Auth/Register";
+import Dashboard from "./components/Dashboard/Dashboard";
+import PrivateRoute from "./components/Util/PrivateRoute";
 
 function App() {
+  const [currentUser, setCurrentUser] = useState(null);
+
+  useEffect(() => {
+    const storedUser = window.localStorage.getItem("bankUser");
+    if (storedUser) {
+      setCurrentUser(JSON.parse(storedUser));
+    }
+  }, []);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+      <Routes>
+        <Route path="/" exact element={<Home />} />
+        <Route
+          path="/login"
+          exact
+          element={
+            <Login currentUser={currentUser} setCurrentUser={setCurrentUser} />
+          }
+        />
+        <Route
+          path="/register"
+          exact
+          element={
+            <Register
+              currentUser={currentUser}
+              setCurrentUser={setCurrentUser}
+            />
+          }
+        />
+        <Route
+          path="/dashboard"
+          exact
+          element={<PrivateRoute currentUser={currentUser} />}
         >
-          Learn React
-        </a>
-      </header>
+          <Route
+            path="/dashboard"
+            exact
+            element={
+              <Dashboard
+                currentUser={currentUser}
+                setCurrentUser={setCurrentUser}
+              />
+            }
+          />
+        </Route>
+      </Routes>
     </div>
   );
 }
